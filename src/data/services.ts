@@ -7,14 +7,14 @@ export const services: Service[] = [
     description:
       "Custom website design and development for your business needs",
     price: 1200,
-    image: "/placeholder.svg",
+    image: "./images/web-dev.jpg",
   },
   {
     id: "2",
     name: "Mobile App Development",
     description: "Native mobile applications for iOS and Android platforms",
     price: 2500,
-    image: "/placeholder.svg",
+    image: "/images/app-dev.jpg",
   },
   {
     id: "3",
@@ -22,14 +22,14 @@ export const services: Service[] = [
     description:
       "User-centered design to enhance the user experience of your products",
     price: 800,
-    image: "/placeholder.svg",
+    image: "/images/ui-ux.png",
   },
   {
     id: "4",
     name: "SEO Optimization",
     description: "Improve your website's visibility in search engines",
     price: 500,
-    image: "/placeholder.svg",
+    image: "/images/seo-optimisation.jpg",
   },
   {
     id: "5",
@@ -37,7 +37,7 @@ export const services: Service[] = [
     description:
       "High-quality content for your website, blog, and social media",
     price: 300,
-    image: "/placeholder.svg",
+    image: "/images/content-creation.jpg",
   },
   {
     id: "6",
@@ -45,6 +45,6 @@ export const services: Service[] = [
     description:
       "Comprehensive digital marketing strategies to grow your business",
     price: 1000,
-    image: "/placeholder.svg",
+    image: "/images/digital-marketing.png",
   },
 ];
