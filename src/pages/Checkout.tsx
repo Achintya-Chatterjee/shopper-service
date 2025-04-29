@@ -1,5 +1,5 @@
 import { CheckoutForm } from "@/components/CheckoutForm";
-import { useCart } from "@/context/CartContext";
+import { useCart } from "@/context/cart";
 import { formatCurrency } from "@/lib/utils";
 import { CartItem } from "@/components/CartItem";
 import { Button } from "@/components/ui/button";

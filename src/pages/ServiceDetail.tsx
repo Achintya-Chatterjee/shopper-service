@@ -4,7 +4,7 @@ import { services } from "@/data/services";
 import { ServiceReviews } from "@/components/ServiceReviews";
 import { ServiceAvailability } from "@/components/ServiceAvailability";
 import { RelatedServices } from "@/components/RelatedServices";
-import { useCart } from "@/context/CartContext";
+import { useCart } from "@/context/cart";
 import { Button } from "@/components/ui/button";
 import { Star } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";

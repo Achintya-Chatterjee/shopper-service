@@ -1,6 +1,6 @@
 import { CartItem as CartItemType } from "@/types/Index";
 import { Button } from "@/components/ui/button";
-import { useCart } from "@/context/CartContext";
+import { useCart } from "@/context/cart";
 import { Minus, Plus, Trash, FileText } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { useState } from "react";

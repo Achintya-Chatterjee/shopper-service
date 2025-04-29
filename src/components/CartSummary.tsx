@@ -1,4 +1,4 @@
-import { useCart } from "@/context/CartContext";
+import { useCart } from "@/context/cart";
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/lib/utils";
 import { Link } from "react-router-dom";

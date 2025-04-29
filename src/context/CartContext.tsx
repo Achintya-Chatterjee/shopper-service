@@ -1,91 +1,38 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  ReactNode,
-  useEffect,
-} from "react";
+import { createContext, useContext, ReactNode, useEffect } from "react";
 import { CartItem, Service, SavedCart } from "@/types/Index";
 import { toast } from "@/components/ui/sonner";
-import { generateShareableCartId } from "@/lib/utils";
-import { applyPromoCode, calculateQuantityDiscounts } from "@/lib/cart";
-
-interface CartContextType {
-  cartItems: CartItem[];
-  addToCart: (service: Service, notes?: string) => void;
-  removeFromCart: (serviceId: string) => void;
-  updateQuantity: (serviceId: string, quantity: number) => void;
-  updateCartItemNotes: (serviceId: string, notes: string) => void;
-  clearCart: () => void;
-  getCartTotal: () => number;
-  getCartItemCount: () => number;
-  getDiscountedTotal: () => number;
-  saveCartForLater: () => void;
-  loadSavedCart: (savedCartId: string) => void;
-  getSavedCarts: () => SavedCart[];
-  shareCart: () => string;
-  applyPromoCode: (code: string) => boolean;
-  removePromoCode: () => void;
-  promoCode: string | null;
-  promoDiscount: number;
-  savedCarts: SavedCart[];
-}
-
-const SAVED_CARTS_KEY = "saved_carts";
-const CURRENT_CART_KEY = "current_cart";
+import {
+  saveCartToLocalStorage,
+  calculateQuantityDiscounts,
+  handlePromoCode,
+  saveCartToDatabase,
+  shareCartToDatabase,
+  createLocalSavedCart,} from "./cart/cartUtils";
+import { useCartAuth, useCartData } from "./cart/cartHooks";
+import { CartContextType } from "./cart/types";
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [savedCarts, setSavedCarts] = useState<SavedCart[]>([]);
-  const [promoCode, setPromoCode] = useState<string | null>(null);
-  const [promoDiscount, setPromoDiscount] = useState(0);
+  const { userId } = useCartAuth();
+  const {
+    cartItems,
+    setCartItems,
+    savedCarts,
+    setSavedCarts,
+    promoCode,
+    setPromoCode,
+    promoDiscount,
+    setPromoDiscount,
+    isLoading,
+  } = useCartData(userId);
 
-  // Load cart from localStorage on component mount
+  // Save cart to localStorage whenever it changes (for non-authenticated users)
   useEffect(() => {
-    try {
-      const savedCartData = localStorage.getItem(CURRENT_CART_KEY);
-      if (savedCartData) {
-        const parsedData = JSON.parse(savedCartData);
-        setCartItems(parsedData.cartItems || []);
-        setPromoCode(parsedData.promoCode || null);
-        setPromoDiscount(parsedData.promoDiscount || 0);
-      }
-
-      const savedCartsData = localStorage.getItem(SAVED_CARTS_KEY);
-      if (savedCartsData) {
-        setSavedCarts(JSON.parse(savedCartsData));
-      }
-    } catch (error) {
-      console.error("Error loading cart from localStorage:", error);
+    if (!userId) {
+      saveCartToLocalStorage(cartItems, promoCode, promoDiscount);
     }
-  }, []);
-
-  // Save cart to localStorage whenever it changes
-  useEffect(() => {
-    try {
-      localStorage.setItem(
-        CURRENT_CART_KEY,
-        JSON.stringify({
-          cartItems,
-          promoCode,
-          promoDiscount,
-        })
-      );
-    } catch (error) {
-      console.error("Error saving cart to localStorage:", error);
-    }
-  }, [cartItems, promoCode, promoDiscount]);
-
-  // Save saved carts to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem(SAVED_CARTS_KEY, JSON.stringify(savedCarts));
-    } catch (error) {
-      console.error("Error saving carts to localStorage:", error);
-    }
-  }, [savedCarts]);
+  }, [cartItems, promoCode, promoDiscount, userId]);
 
   const addToCart = (service: Service, notes?: string) => {
     setCartItems((prevItems) => {
@@ -179,25 +126,50 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return cartItems.reduce((total, item) => total + item.quantity, 0);
   };
 
-  const saveCartForLater = () => {
+  const saveCartForLater = async () => {
     if (cartItems.length === 0) {
       toast.error("Cannot save an empty cart");
       return;
     }
 
     const cartName = `Cart ${savedCarts.length + 1}`;
-    const newSavedCart: SavedCart = {
-      id: generateShareableCartId(),
-      name: cartName,
-      items: [...cartItems],
-      savedAt: new Date(),
-      promoCode,
-      promoDiscount,
-    };
 
-    setSavedCarts((prev) => [...prev, newSavedCart]);
-    toast.success("Cart saved for later");
-    return newSavedCart.id;
+    // If user is not authenticated, save to localStorage
+    if (!userId) {
+      const newSavedCart = createLocalSavedCart(
+        cartItems,
+        promoCode,
+        promoDiscount,
+        cartName
+      );
+      setSavedCarts((prev) => [...prev, newSavedCart]);
+      toast.success("Cart saved for later");
+      return newSavedCart.id;
+    }
+
+    // If authenticated, save to Supabase
+    try {
+      const data = await saveCartToDatabase(userId, cartName, cartItems);
+
+      // Add the new cart to local state
+      const newSavedCart = {
+        id: data.id,
+        name: data.name,
+        items: data.items as unknown as CartItem[],
+        savedAt: new Date(data.created_at),
+        // Use default values instead of accessing potentially missing properties
+        promoCode: null,
+        promoDiscount: 0,
+      };
+
+      setSavedCarts((prev) => [newSavedCart, ...prev]);
+      toast.success("Cart saved to your account");
+      return data.id;
+    } catch (error) {
+      console.error("Error saving cart:", error);
+      toast.error("Failed to save cart");
+      return undefined;
+    }
   };
 
   const loadSavedCart = (savedCartId: string) => {
@@ -217,27 +189,54 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return savedCarts;
   };
 
-  const shareCart = () => {
+  const shareCart = async (): Promise<string> => {
     if (cartItems.length === 0) {
       toast.error("Cannot share an empty cart");
       return "";
     }
 
-    // Generate a unique ID for sharing
-    const shareableCartId = saveCartForLater();
-    const shareableLink = `${window.location.origin}/shared-cart/${shareableCartId}`;
+    try {
+      // For authenticated users, create a shared cart in the database
+      if (userId) {
+        const data = await shareCartToDatabase(
+          userId,
+          cartItems,
+          promoCode,
+          promoDiscount
+        );
+        const shareableLink = `${window.location.origin}/shared-cart/${data.id}`;
 
-    // Copy to clipboard
-    navigator.clipboard
-      .writeText(shareableLink)
-      .then(() => toast.success("Cart link copied to clipboard"))
-      .catch(() => toast.error("Failed to copy link"));
+        // Copy to clipboard
+        await navigator.clipboard
+          .writeText(shareableLink)
+          .then(() => toast.success("Cart link copied to clipboard"))
+          .catch(() => toast.error("Failed to copy link"));
 
-    return shareableLink;
+        return shareableLink;
+      } else {
+        // For non-authenticated users, use the local saved cart approach
+        const savedCartId = await saveCartForLater();
+        if (!savedCartId) return "";
+
+        const shareableLink = `${window.location.origin}/shared-cart/${savedCartId}`;
+
+        // Copy to clipboard
+        await navigator.clipboard
+          .writeText(shareableLink)
+          .then(() => toast.success("Cart link copied to clipboard"))
+          .catch(() => toast.error("Failed to copy link"));
+
+        return shareableLink;
+      }
+    } catch (error) {
+      console.error("Error sharing cart:", error);
+      toast.error("Failed to share cart");
+      return "";
+    }
   };
 
   const applyPromoCodeToCart = (code: string) => {
-    const result = applyPromoCode(code, getCartTotal());
+    const result = handlePromoCode(code, getCartTotal());
     if (result.valid) {
       setPromoCode(code);
       setPromoDiscount(result.discount);
@@ -274,6 +273,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
     promoCode,
     promoDiscount,
     savedCarts,
+    isLoading,
+    userId,
+    setCartItems,
+    setPromoCode,
+    setPromoDiscount,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

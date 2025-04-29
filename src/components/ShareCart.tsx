@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useCart } from "@/context/CartContext";
+import { useCart } from "@/context/cart";
 import { Button } from "@/components/ui/button";
 import { Share } from "lucide-react";
 import {
@@ -18,11 +18,15 @@ export function ShareCart() {
   const [shareableLink, setShareableLink] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const handleShareCart = () => {
-    const link = shareCart();
-    if (link) {
-      setShareableLink(link);
-      setDialogOpen(true);
+  const handleShareCart = async () => {
+    try {
+      const link = await shareCart();
+      if (link) {
+        setShareableLink(link);
+        setDialogOpen(true);
+      }
+    } catch (error) {
+      console.error("Error sharing cart:", error);
     }
   };
 

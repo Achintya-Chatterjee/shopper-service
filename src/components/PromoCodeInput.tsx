@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useCart } from "@/context/CartContext";
+import { useCart } from "@/context/cart";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tag } from "lucide-react";

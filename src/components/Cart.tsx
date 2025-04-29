@@ -1,7 +1,8 @@
-import { useCart } from "@/context/CartContext";
+import { useCart } from "@/context/cart";
 import { CartItem } from "./CartItem";
 import { CartSummary } from "./CartSummary";
 import { Button } from "@/components/ui/button";
+import { AuthButton } from "./AuthButton";
 import {
   Drawer,
   DrawerClose,
@@ -50,11 +51,14 @@ export function Cart() {
           <CartSummary />
         </div>
         <DrawerFooter className="flex flex-row justify-between pt-2">
-          {itemCount > 0 && (
-            <Button variant="outline" onClick={clearCart}>
-              Clear Cart
-            </Button>
-          )}
+          <div className="flex gap-2">
+            {itemCount > 0 && (
+              <Button variant="outline" onClick={clearCart}>
+                Clear Cart
+              </Button>
+            )}
+            <AuthButton />
+          </div>
           <DrawerClose asChild>
             <Button variant="outline">Continue Shopping</Button>
           </DrawerClose>

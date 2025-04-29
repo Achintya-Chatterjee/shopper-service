@@ -4,7 +4,7 @@ import { Address } from "@/types/Index";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/sonner";
-import { useCart } from "@/context/CartContext";
+import { useCart } from "@/context/cart";
 import { useNavigate } from "react-router-dom";
 import {
   Form,

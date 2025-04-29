@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useCart } from "@/context/CartContext";
+import { useCart } from "@/context/cart";
 import { formatCurrency } from "@/lib/utils";
 import { Star } from "lucide-react";
 import { Link } from "react-router-dom";
