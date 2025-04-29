@@ -8,6 +8,7 @@ export interface Service {
   rating: number;
   reviews: Review[];
   availability: AvailabilitySlot[];
+  providerId?: string;
 }
 
 export interface Review {
@@ -56,4 +57,58 @@ export interface PromoCodeResult {
   valid: boolean;
   discount: number;
   message: string;
+}
+
+export interface Order {
+  id: string;
+  userId: string;
+  items: OrderItem[];
+  orderDate: Date;
+  total: number;
+  status: OrderStatus;
+  shippingAddress: Address;
+  paymentMethod: string;
+  promoCode?: string;
+  promoDiscount?: number;
+}
+
+export interface OrderItem {
+  serviceId: string;
+  serviceName: string;
+  quantity: number;
+  price: number;
+  providerId: string;
+  providerName: string;
+}
+
+export type OrderStatus =
+  | "pending"
+  | "confirmed"
+  | "in_progress"
+  | "completed"
+  | "cancelled";
+
+export interface ServiceProvider {
+  id: string;
+  name: string;
+  description: string;
+  logo?: string;
+  coverImage?: string;
+  rating: number;
+  reviewCount: number;
+  contactInfo: {
+    email: string;
+    phone?: string;
+    website?: string;
+    address?: string;
+  };
+  specialties: string[];
+  services: string[];
+  founded?: string;
+  socialMedia?: {
+    facebook?: string;
+    twitter?: string;
+    instagram?: string;
+    linkedin?: string;
+  };
 }
