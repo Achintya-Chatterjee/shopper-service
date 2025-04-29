@@ -7,6 +7,7 @@ import { CartProvider } from "@/context/CartContext";
 import Index from "./pages/Index";
 import ServiceDetail from "./pages/ServiceDetail";
 import CheckoutPage from "./pages/Checkout";
+import SharedCartPage from "./pages/SharedCart";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,6 +23,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/service/:id" element={<ServiceDetail />} />
             <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/shared-cart/:cartId" element={<SharedCartPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

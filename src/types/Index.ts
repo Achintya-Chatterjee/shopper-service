@@ -30,6 +30,8 @@ export interface AvailabilitySlot {
 export interface CartItem {
   service: Service;
   quantity: number;
+  notes?: string;
+  appliedDiscount?: number;
 }
 
 export interface Address {
@@ -39,4 +41,19 @@ export interface Address {
   city: string;
   state: string;
   zipCode: string;
+}
+
+export interface SavedCart {
+  id: string;
+  name: string;
+  items: CartItem[];
+  savedAt: Date;
+  promoCode: string | null;
+  promoDiscount: number;
+}
+
+export interface PromoCodeResult {
+  valid: boolean;
+  discount: number;
+  message: string;
 }
