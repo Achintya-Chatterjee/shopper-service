@@ -16,6 +16,7 @@ export const orders: Order[] = [
       },
     ],
     orderDate: new Date("2024-03-15"),
+    estimatedDeliveryDate: new Date("2024-03-30"),
     total: 1200,
     status: "completed",
     shippingAddress: {
@@ -33,6 +34,43 @@ export const orders: Order[] = [
         cardNumber: "•••• •••• •••• 4242",
       },
     },
+    trackingInfo: {
+      currentStatus: "completed",
+      statusUpdates: [
+        {
+          status: "pending",
+          timestamp: new Date("2024-03-15T10:30:00"),
+          message: "Order received",
+        },
+        {
+          status: "confirmed",
+          timestamp: new Date("2024-03-16T09:15:00"),
+          message: "Order confirmed",
+        },
+        {
+          status: "in_progress",
+          timestamp: new Date("2024-03-18T14:20:00"),
+          message: "Service in progress",
+        },
+        {
+          status: "completed",
+          timestamp: new Date("2024-03-28T16:45:00"),
+          message: "Service completed",
+        },
+      ],
+    },
+    feedback: {
+      overallRating: 5,
+      overallComment: "Great service, very professional!",
+      itemRatings: [
+        {
+          serviceId: "service-1",
+          rating: 5,
+          comment: "Excellent work on my website. Very satisfied!",
+        },
+      ],
+      submittedAt: new Date("2024-03-29T12:30:00"),
+    },
   },
   {
     id: "order-2",
@@ -48,6 +86,9 @@ export const orders: Order[] = [
       },
     ],
     orderDate: new Date("2024-04-01"),
+    scheduledDate: new Date("2024-04-15"),
+    scheduledTime: "10:00 AM",
+    estimatedDeliveryDate: new Date("2024-04-20"),
     total: 800,
     status: "in_progress",
     shippingAddress: {
@@ -64,6 +105,26 @@ export const orders: Order[] = [
       details: {
         paypalEmail: "john@example.com",
       },
+    },
+    trackingInfo: {
+      currentStatus: "in_progress",
+      statusUpdates: [
+        {
+          status: "pending",
+          timestamp: new Date("2024-04-01T15:20:00"),
+          message: "Order received",
+        },
+        {
+          status: "confirmed",
+          timestamp: new Date("2024-04-02T09:45:00"),
+          message: "Order confirmed",
+        },
+        {
+          status: "in_progress",
+          timestamp: new Date("2024-04-10T11:30:00"),
+          message: "Service in progress",
+        },
+      ],
     },
   },
   {
@@ -88,6 +149,7 @@ export const orders: Order[] = [
       },
     ],
     orderDate: new Date("2024-04-20"),
+    estimatedDeliveryDate: new Date("2024-05-05"),
     total: 1500,
     status: "confirmed",
     shippingAddress: {
@@ -107,6 +169,21 @@ export const orders: Order[] = [
     },
     promoCode: "SPRING20",
     promoDiscount: 300,
+    trackingInfo: {
+      currentStatus: "confirmed",
+      statusUpdates: [
+        {
+          status: "pending",
+          timestamp: new Date("2024-04-20T16:40:00"),
+          message: "Order received",
+        },
+        {
+          status: "confirmed",
+          timestamp: new Date("2024-04-21T10:15:00"),
+          message: "Order confirmed and scheduled",
+        },
+      ],
+    },
   },
 ];
 

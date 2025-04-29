@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import { orders } from "@/data/orders";
+import { orders, getOrderStatusColor } from "@/data/orders";
 import { serviceProviders, getProviderById } from "@/data/providers";
 import { Header } from "@/components/Header";
 import { formatCurrency } from "@/lib/utils";
@@ -10,15 +10,25 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { getOrderStatusColor } from "@/data/orders";
-import { Clock, MapPin, CreditCard } from "lucide-react";
+import {
+  Clock,
+  MapPin,
+  CreditCard,
+  AlertCircle,
+  RotateCw,
+  MessageSquare,
+} from "lucide-react";
+import { useCart } from "@/context/cart";
+import { toast } from "@/components/ui/sonner";
 import { Order } from "@/types/Index";
 
 const OrderDetail = () => {
   const { id } = useParams<{ id: string }>();
   const order = orders.find((o) => o.id === id);
+  const { addToCart, clearCart } = useCart();
 
   const getPaymentMethodDisplay = (order: Order) => {
     if (!order.paymentMethod) return "Not specified";
@@ -34,6 +44,33 @@ const OrderDetail = () => {
         return "Cash on Delivery";
       default:
         return order.paymentMethod.type;
+    }
+  };
+
+  const handleReorder = () => {
+    clearCart();
+
+    if (order) {
+      order.items.forEach((item) => {
+        const service = {
+          id: item.serviceId,
+          name: item.serviceName,
+          price: item.price,
+          providerId: item.providerId,
+
+          description: "",
+          category: "",
+          rating: 0,
+          reviews: [],
+          availability: [],
+        };
+
+        for (let i = 0; i < item.quantity; i++) {
+          addToCart(service);
+        }
+      });
+
+      toast.success("Services added to cart");
     }
   };
 
@@ -116,6 +153,22 @@ const OrderDetail = () => {
                   })}
                 </div>
               </CardContent>
+              <CardFooter className="flex justify-end gap-3">
+                <Button
+                  variant="outline"
+                  onClick={handleReorder}
+                  className="flex items-center gap-2"
+                >
+                  <RotateCw className="h-4 w-4" />
+                  Re-order Services
+                </Button>
+                <Button asChild className="flex items-center gap-2">
+                  <Link to={`/feedback/${order.id}`}>
+                    <MessageSquare className="h-4 w-4" />
+                    Leave Feedback
+                  </Link>
+                </Button>
+              </CardFooter>
             </Card>
 
             <Card className="mt-6">
@@ -154,8 +207,11 @@ const OrderDetail = () => {
 
           <div>
             <Card>
-              <CardHeader>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle>Delivery Information</CardTitle>
+                <Button asChild variant="ghost" size="sm" className="h-8 px-2">
+                  <Link to={`/order-tracking/${order.id}`}>Track Order</Link>
+                </Button>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex items-start space-x-3">
@@ -182,6 +238,18 @@ const OrderDetail = () => {
                     <p className="text-sm text-muted-foreground">
                       {format(new Date(order.orderDate), "MMMM d, yyyy")}
                     </p>
+                    {order.scheduledDate && order.scheduledTime && (
+                      <div className="mt-2">
+                        <h4 className="font-medium">Scheduled Service</h4>
+                        <p className="text-sm text-muted-foreground">
+                          {format(
+                            new Date(order.scheduledDate),
+                            "MMMM d, yyyy"
+                          )}{" "}
+                          at {order.scheduledTime}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -192,6 +260,27 @@ const OrderDetail = () => {
                     <p className="text-sm text-muted-foreground">
                       {getPaymentMethodDisplay(order)}
                     </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-3">
+                  <AlertCircle className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-medium">Need Help?</h4>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      If you have any questions about your order, please contact
+                      our customer support team.
+                    </p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full"
+                      onClick={() =>
+                        (window.location.href = `mailto:support@shopperservice.com?subject=Help with Order ${order.id}`)
+                      }
+                    >
+                      Contact Support
+                    </Button>
                   </div>
                 </div>
               </CardContent>

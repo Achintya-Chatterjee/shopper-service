@@ -16,6 +16,11 @@ import Favorites from "./pages/Favorites";
 import Compare from "./pages/Compare";
 import OrderHistory from "./pages/OrderHistory";
 import OrderDetail from "./pages/OrderDetail";
+import OrderTracking from "./pages/OrderTracking";
+import OrderFeedback from "./pages/OrderFeedback";
+import LoyaltyProgram from "./pages/LoyaltyProgram";
+import ReOrder from "./pages/ReOrder";
+import NotificationPreferences from "./pages/NotificationPreferences";
 import Providers from "./pages/Providers";
 import ProviderDetail from "./pages/ProviderDetail";
 import NotFound from "./pages/NotFound";
@@ -45,6 +50,17 @@ const App = () => {
                     <Route path="/compare" element={<Compare />} />
                     <Route path="/orders" element={<OrderHistory />} />
                     <Route path="/order/:id" element={<OrderDetail />} />
+                    <Route
+                      path="/order-tracking/:id"
+                      element={<OrderTracking />}
+                    />
+                    <Route path="/feedback/:id" element={<OrderFeedback />} />
+                    <Route path="/reorder/:id" element={<ReOrder />} />
+                    <Route path="/loyalty" element={<LoyaltyProgram />} />
+                    <Route
+                      path="/notifications"
+                      element={<NotificationPreferences />}
+                    />
                     <Route path="/providers" element={<Providers />} />
                     <Route path="/provider/:id" element={<ProviderDetail />} />
                     <Route path="*" element={<NotFound />} />

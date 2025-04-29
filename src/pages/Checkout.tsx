@@ -72,7 +72,8 @@ const CheckoutPage = () => {
               Privacy Policy.
             </p>
             <p className="mt-2">
-              Need help? Contact our customer support at support@example.com
+              Need help? Contact our customer support at
+              support@shopperservice@.com
             </p>
           </div>
         </div>

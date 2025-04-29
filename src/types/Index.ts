@@ -71,12 +71,15 @@ export interface Order {
   orderDate: Date;
   scheduledDate?: Date;
   scheduledTime?: string;
+  estimatedDeliveryDate?: Date;
   total: number;
   status: OrderStatus;
   shippingAddress: Address;
   paymentMethod: PaymentMethod;
   promoCode?: string;
   promoDiscount?: number;
+  trackingInfo?: TrackingInfo;
+  feedback?: OrderFeedback;
 }
 
 export interface OrderItem {
@@ -95,6 +98,34 @@ export type OrderStatus =
   | "in_progress"
   | "completed"
   | "cancelled";
+
+export interface TrackingInfo {
+  currentStatus: OrderStatus;
+  statusUpdates: StatusUpdate[];
+  estimatedDeliveryDate?: Date;
+  deliveryPartner?: string;
+  trackingNumber?: string;
+}
+
+export interface StatusUpdate {
+  status: OrderStatus;
+  timestamp: Date;
+  message: string;
+  location?: string;
+}
+
+export interface OrderFeedback {
+  overallRating: number;
+  overallComment?: string;
+  itemRatings: ItemRating[];
+  submittedAt: Date;
+}
+
+export interface ItemRating {
+  serviceId: string;
+  rating: number;
+  comment?: string;
+}
 
 export interface ServiceProvider {
   id: string;
@@ -149,4 +180,69 @@ export interface ServiceCustomizationOption {
   id: string;
   name: string;
   priceAdjustment: number;
+}
+
+export interface LoyaltyProgram {
+  userId: string;
+  points: number;
+  tier: LoyaltyTier;
+  pointsHistory: PointsTransaction[];
+  availableRewards: Reward[];
+  coupons: Coupon[];
+}
+
+export interface LoyaltyTier {
+  name: "Bronze" | "Silver" | "Gold" | "Platinum";
+  threshold: number;
+  benefits: string[];
+}
+
+export interface PointsTransaction {
+  id: string;
+  date: Date;
+  points: number;
+  description: string;
+  orderId?: string;
+}
+
+export interface Reward {
+  id: string;
+  name: string;
+  description: string;
+  pointsCost: number;
+  image?: string;
+}
+
+export interface Coupon {
+  id: string;
+  code: string;
+  description: string;
+  discount: number | string;
+  expiresAt: Date;
+  isActive: boolean;
+}
+
+export interface NotificationPreferences {
+  userId: string;
+  email: {
+    orderConfirmation: boolean;
+    orderUpdates: boolean;
+    orderCompleted: boolean;
+    orderFeedback: boolean;
+    promotions: boolean;
+    newsletter: boolean;
+    loyaltyUpdates: boolean;
+  };
+  push: {
+    orderConfirmation: boolean;
+    orderUpdates: boolean;
+    orderCompleted: boolean;
+    loyaltyUpdates: boolean;
+    promotions: boolean;
+  };
+  sms: {
+    orderConfirmation: boolean;
+    orderUpdates: boolean;
+    orderCompleted: boolean;
+  };
 }
