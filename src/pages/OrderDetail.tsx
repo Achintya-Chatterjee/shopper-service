@@ -14,10 +14,28 @@ import {
 import { Button } from "@/components/ui/button";
 import { getOrderStatusColor } from "@/data/orders";
 import { Clock, MapPin, CreditCard } from "lucide-react";
+import { Order } from "@/types/Index";
 
 const OrderDetail = () => {
   const { id } = useParams<{ id: string }>();
   const order = orders.find((o) => o.id === id);
+
+  const getPaymentMethodDisplay = (order: Order) => {
+    if (!order.paymentMethod) return "Not specified";
+
+    switch (order.paymentMethod.type) {
+      case "credit_card":
+        return `Credit Card ${order.paymentMethod.details.cardNumber || ""}`;
+      case "paypal":
+        return `PayPal (${order.paymentMethod.details.paypalEmail || ""})`;
+      case "bank_transfer":
+        return "Bank Transfer";
+      case "cash":
+        return "Cash on Delivery";
+      default:
+        return order.paymentMethod.type;
+    }
+  };
 
   if (!order) {
     return (
@@ -172,7 +190,7 @@ const OrderDetail = () => {
                   <div>
                     <h4 className="font-medium">Payment Method</h4>
                     <p className="text-sm text-muted-foreground">
-                      {order.paymentMethod}
+                      {getPaymentMethodDisplay(order)}
                     </p>
                   </div>
                 </div>

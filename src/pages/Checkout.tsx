@@ -5,6 +5,7 @@ import { CartItem } from "@/components/CartItem";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import { Card } from "@/components/ui/card";
 
 const CheckoutPage = () => {
   const { cartItems, getCartTotal } = useCart();
@@ -26,7 +27,7 @@ const CheckoutPage = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 pb-16">
       <Button variant="ghost" asChild className="mb-6">
         <Link to="/">
           <ArrowLeft className="mr-2 h-4 w-4" />
@@ -36,16 +37,16 @@ const CheckoutPage = () => {
 
       <h1 className="text-3xl font-bold mb-8">Checkout</h1>
 
-      <div className="grid md:grid-cols-2 gap-8">
+      <div className="grid lg:grid-cols-2 gap-8">
         <div>
-          <h2 className="text-xl font-semibold mb-4">Shipping Information</h2>
-          <CheckoutForm />
+          <Card className="p-6">
+            <CheckoutForm />
+          </Card>
         </div>
 
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
-          <div className="border rounded-lg overflow-hidden">
-            <div className="p-4 bg-muted/50">
+        <div className="space-y-6">
+          <Card>
+            <div className="p-4 bg-muted/50 border-b">
               <h3 className="font-medium">Items in Cart</h3>
             </div>
             <div className="p-4 space-y-4 max-h-[400px] overflow-y-auto">
@@ -63,6 +64,16 @@ const CheckoutPage = () => {
                 <span>{formatCurrency(cartTotal)}</span>
               </div>
             </div>
+          </Card>
+
+          <div className="text-sm text-muted-foreground">
+            <p>
+              By completing your purchase, you agree to our Terms of Service and
+              Privacy Policy.
+            </p>
+            <p className="mt-2">
+              Need help? Contact our customer support at support@example.com
+            </p>
           </div>
         </div>
       </div>

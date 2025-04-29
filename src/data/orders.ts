@@ -1,4 +1,4 @@
-import { Order, OrderStatus } from "@/types/Index";
+import { Order, OrderStatus, PaymentMethod } from "@/types/Index";
 
 // Mock orders data
 export const orders: Order[] = [
@@ -26,7 +26,13 @@ export const orders: Order[] = [
       state: "CA",
       zipCode: "94105",
     },
-    paymentMethod: "Credit Card",
+    paymentMethod: {
+      id: "pm-1",
+      type: "credit_card",
+      details: {
+        cardNumber: "•••• •••• •••• 4242",
+      },
+    },
   },
   {
     id: "order-2",
@@ -52,7 +58,13 @@ export const orders: Order[] = [
       state: "CA",
       zipCode: "94105",
     },
-    paymentMethod: "PayPal",
+    paymentMethod: {
+      id: "pm-2",
+      type: "paypal",
+      details: {
+        paypalEmail: "john@example.com",
+      },
+    },
   },
   {
     id: "order-3",
@@ -86,7 +98,13 @@ export const orders: Order[] = [
       state: "CA",
       zipCode: "94105",
     },
-    paymentMethod: "Credit Card",
+    paymentMethod: {
+      id: "pm-3",
+      type: "credit_card",
+      details: {
+        cardNumber: "•••• •••• •••• 1234",
+      },
+    },
     promoCode: "SPRING20",
     promoDiscount: 300,
   },

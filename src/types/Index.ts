@@ -33,15 +33,20 @@ export interface CartItem {
   quantity: number;
   notes?: string;
   appliedDiscount?: number;
+  customizations?: ServiceCustomization[];
+  scheduledTime?: AvailabilitySlot;
 }
 
 export interface Address {
+  id?: string;
   fullName: string;
   email: string;
   address: string;
   city: string;
   state: string;
   zipCode: string;
+  isDefault?: boolean;
+  userId?: string;
 }
 
 export interface SavedCart {
@@ -64,10 +69,12 @@ export interface Order {
   userId: string;
   items: OrderItem[];
   orderDate: Date;
+  scheduledDate?: Date;
+  scheduledTime?: string;
   total: number;
   status: OrderStatus;
   shippingAddress: Address;
-  paymentMethod: string;
+  paymentMethod: PaymentMethod;
   promoCode?: string;
   promoDiscount?: number;
 }
@@ -79,6 +86,7 @@ export interface OrderItem {
   price: number;
   providerId: string;
   providerName: string;
+  customizations?: ServiceCustomization[];
 }
 
 export type OrderStatus =
@@ -105,10 +113,40 @@ export interface ServiceProvider {
   specialties: string[];
   services: string[];
   founded?: string;
+  serviceAreas?: string[];
   socialMedia?: {
     facebook?: string;
     twitter?: string;
     instagram?: string;
     linkedin?: string;
   };
+}
+
+export interface PaymentMethod {
+  id: string;
+  type: "credit_card" | "paypal" | "bank_transfer" | "cash";
+  details: {
+    cardNumber?: string;
+    cardholderName?: string;
+    expiryDate?: string;
+    cvv?: string;
+    accountNumber?: string;
+    routingNumber?: string;
+    paypalEmail?: string;
+  };
+  isDefault?: boolean;
+}
+
+export interface ServiceCustomization {
+  id: string;
+  name: string;
+  options: ServiceCustomizationOption[];
+  selectedOption?: ServiceCustomizationOption;
+  required: boolean;
+}
+
+export interface ServiceCustomizationOption {
+  id: string;
+  name: string;
+  priceAdjustment: number;
 }
